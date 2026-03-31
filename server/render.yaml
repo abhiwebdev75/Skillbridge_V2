@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: skillbridge-backend
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: process.env.MANGO_URI
+        sync: false
+      - key: process.env.CLIENT_URL
+        sync: false
