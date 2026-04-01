@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
-import './SkillBridge.css';
+import './Skill.css';
 
 const PostTask = () => {
   const navigate = useNavigate();

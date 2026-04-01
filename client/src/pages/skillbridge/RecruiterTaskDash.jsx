@@ -5,7 +5,7 @@ import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { getSocket } from '../../services/socket';
 import toast from 'react-hot-toast';
-import './SkillBridge.css';
+import './Skill.css';
 
 const RecruiterTaskDash = () => {
   const { mongoUser } = useAuth();

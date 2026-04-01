@@ -5,7 +5,7 @@ import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import ChatBox from '../../components/shared/ChatBox';
 import toast from 'react-hot-toast';
-import './SkillBridge.css';
+import './Skill.css';
 
 const TaskWorkspace = () => {
   const { id }        = useParams();

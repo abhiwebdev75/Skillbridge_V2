@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
-import './SkillBridge.css';
+import './Skill.css';
 
 const TaskDetail = () => {
   const { id }        = useParams();
