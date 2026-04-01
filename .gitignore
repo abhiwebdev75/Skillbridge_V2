@@ -1,9 +1,6 @@
-<<<<<<< HEAD
 .env
 .env.*
 node_modules
 dist/
 build/
-=======
 node_modules
->>>>>>> 12ac69f (deploy)
