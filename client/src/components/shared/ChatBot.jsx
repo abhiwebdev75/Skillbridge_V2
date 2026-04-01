@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import './Chatbot.css';
+import './ChatBot.css';
 
 const SYSTEM_PROMPT = `You are SkillBot, the helpful AI assistant for SkillBridge — a platform that connects students and employees with recruiters and teachers through real-world tasks, leading to internship and job opportunities.
 
