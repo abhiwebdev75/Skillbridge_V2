@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link, useSearchParams } from 'react-router-dom';
 import api from '../../services/api';
-import './SkillBridge.css';
+import './Skill.css';
 
 const difficulties   = ['', 'beginner', 'intermediate', 'advanced'];
 const compensations  = ['', 'paid', 'unpaid', 'certificate'];
