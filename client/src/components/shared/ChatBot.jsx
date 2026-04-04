@@ -3,7 +3,7 @@ import { useNavigate }  from 'react-router-dom';
 import { useAuth }      from '../../context/AuthContext';
 import { usePortal }    from '../../context/PortalContext';
 import api              from '../../services/api';
-import './Chatbot.css';
+import './ChatBot.css';
 
 // ── Smart suggestions based on conversation ────────────────
 const getSuggestions = (text) => {
