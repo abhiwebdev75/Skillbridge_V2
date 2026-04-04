@@ -36,6 +36,7 @@ app.use('/api/users',        require('./routes/users'));
 app.use('/api/reports',      require('./routes/reports'));
 app.use('/api/completions', require('./routes/completions'));
 app.use('/api/upload', uploadRoutes);
+app.use('/api/chat', require('./routes/chat'));
 
 require('./socket/chatHandler')(io);
 
