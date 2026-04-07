@@ -41,13 +41,7 @@ app.use('/api/chat', require('./routes/chat'));
 require('./socket/chatHandler')(io);
 
 app.get('/', (req, res) => res.json({ status: 'SkillBridge API running' }));
-app.get('/api/test', (req, res) => {
-  res.json({ 
-    status: 'Backend is alive',
-    geminiKey: !!process.env.GEMINI_API_KEY,
-    time: new Date().toISOString()
-  });
-});
+
 
 httpServer.listen(process.env.PORT || 5000, () => {
   console.log(`Server running on port ${process.env.PORT || 5000}`);
