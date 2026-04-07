@@ -2,7 +2,6 @@ const router      = require('express').Router();
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const verifyToken = require('../middleware/verifyToken');
 const Task        = require('../models/Task');
-const Job         = require('../models/Job');
 const User        = require('../models/User');
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);

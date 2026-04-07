@@ -1,0 +1,57 @@
+const mongoose = require('mongoose');
+
+const applicantSchema = new mongoose.Schema({
+  userId: String,
+  name: String,
+  resumeUrl: String,
+  coverNote: String,
+  status: {
+    type: String,
+    enum: ['pending', 'hired', 'rejected'],
+    default: 'pending',
+  },
+  isFromTask: Boolean,
+  appliedAt: {
+    type: Date,
+    default: Date.now,
+  }
+});
+
+const jobSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  description: String,
+  company: { type: String, required: true },
+  location: String,
+
+  type: {
+    type: String,
+    enum: ['full-time', 'part-time', 'remote', 'contract'],
+    default: 'full-time',
+  },
+
+  salary: String,
+  skills: [String],
+  experience: String,
+
+  postedBy: {
+    userId: String,
+    name: String,
+    organization: String,
+  },
+
+  isFromTaskOffer: Boolean,
+
+  status: {
+    type: String,
+    enum: ['active', 'closed'],
+    default: 'active',
+  },
+
+  openings: Number,
+  deadline: Date,
+
+  applicants: [applicantSchema],
+
+}, { timestamps: true });
+
+module.exports = mongoose.model('Job', jobSchema);
