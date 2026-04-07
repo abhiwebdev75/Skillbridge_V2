@@ -1,23 +1,21 @@
 import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery }            from '@tanstack/react-query';
 import { Link, useSearchParams } from 'react-router-dom';
 import api from '../../services/api';
-import './Skillcss.css';
+import './Skill.css';
 
-const difficulties   = ['', 'beginner', 'intermediate', 'advanced'];
-const compensations  = ['', 'paid', 'unpaid', 'certificate'];
+const difficulties  = ['', 'beginner', 'intermediate', 'advanced'];
+const compensations = ['', 'paid', 'unpaid', 'certificate'];
 
 const TaskBoard = () => {
   const [searchParams] = useSearchParams();
 
-  // ── Read filters from URL (set by chatbot) ──────────────
-  const [search,       setSearch]   = useState(searchParams.get('search')       || '');
-  const [difficulty,   setDiff]     = useState(searchParams.get('difficulty')   || '');
-  const [compensation, setComp]     = useState(searchParams.get('compensation') || '');
-  const [skill,        setSkill]    = useState(searchParams.get('skill')        || '');
-  const [page,         setPage]     = useState(1);
+  const [search,       setSearch] = useState(searchParams.get('search')       || '');
+  const [difficulty,   setDiff]   = useState(searchParams.get('difficulty')   || '');
+  const [compensation, setComp]   = useState(searchParams.get('compensation') || '');
+  const [skill,        setSkill]  = useState(searchParams.get('skill')        || '');
+  const [page,         setPage]   = useState(1);
 
-  // Update filters when URL changes (chatbot navigates here)
   useEffect(() => {
     setSearch(searchParams.get('search')       || '');
     setDiff(searchParams.get('difficulty')     || '');
@@ -34,10 +32,12 @@ const TaskBoard = () => {
     keepPreviousData: true,
   });
 
-  const tasks = data?.tasks || [];
-
-  // Show active filter banner if chatbot sent filters
+  const tasks      = data?.tasks || [];
   const hasFilters = skill || difficulty || compensation || search;
+
+  const clearFilters = () => {
+    setSearch(''); setDiff(''); setComp(''); setSkill(''); setPage(1);
+  };
 
   return (
     <div className="sb-page">
@@ -50,7 +50,6 @@ const TaskBoard = () => {
           </div>
         </div>
 
-        {/* Active filter banner — shown when chatbot navigates here */}
         {hasFilters && (
           <div className="filter-banner">
             <span>🤖 SkillBot filtered:</span>
@@ -58,18 +57,12 @@ const TaskBoard = () => {
             {difficulty   && <span className="filter-tag">{difficulty}</span>}
             {compensation && <span className="filter-tag">{compensation}</span>}
             {search       && <span className="filter-tag">"{search}"</span>}
-            <button
-              className="filter-clear"
-              onClick={() => {
-                setSearch(''); setDiff(''); setComp(''); setSkill('');
-              }}
-            >
-              Clear filters ✕
+            <button className="filter-clear" onClick={clearFilters}>
+              Clear ✕
             </button>
           </div>
         )}
 
-        {/* Filters */}
         <div className="sb-filters">
           <input
             className="sb-search"
@@ -91,26 +84,28 @@ const TaskBoard = () => {
           <select value={difficulty} onChange={e => { setDiff(e.target.value); setPage(1); }}>
             <option value="">All levels</option>
             {difficulties.filter(Boolean).map(d => (
-              <option key={d} value={d}>{d.charAt(0).toUpperCase() + d.slice(1)}</option>
+              <option key={d} value={d}>
+                {d.charAt(0).toUpperCase() + d.slice(1)}
+              </option>
             ))}
           </select>
           <select value={compensation} onChange={e => { setComp(e.target.value); setPage(1); }}>
             <option value="">All types</option>
             {compensations.filter(Boolean).map(c => (
-              <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>
+              <option key={c} value={c}>
+                {c.charAt(0).toUpperCase() + c.slice(1)}
+              </option>
             ))}
           </select>
         </div>
 
-        {/* Rest of your existing TaskBoard JSX below — tasks grid, pagination etc */}
         {isLoading ? (
           <div className="sb-loader"><div className="spinner" /></div>
         ) : tasks.length === 0 ? (
           <div className="sb-empty">
             <p>No tasks found{hasFilters ? ' with these filters' : ''}.</p>
             {hasFilters && (
-              <button className="btn-outline mt-16"
-                onClick={() => { setSearch(''); setDiff(''); setComp(''); setSkill(''); }}>
+              <button className="btn-outline mt-16" onClick={clearFilters}>
                 Clear filters
               </button>
             )}
@@ -123,9 +118,13 @@ const TaskBoard = () => {
 
         {data?.pages > 1 && (
           <div className="pagination">
-            <button disabled={page === 1} onClick={() => setPage(p => p - 1)}>← Prev</button>
+            <button disabled={page === 1} onClick={() => setPage(p => p - 1)}>
+              ← Prev
+            </button>
             <span>Page {page} of {data.pages}</span>
-            <button disabled={page === data.pages} onClick={() => setPage(p => p + 1)}>Next →</button>
+            <button disabled={page === data.pages} onClick={() => setPage(p => p + 1)}>
+              Next →
+            </button>
           </div>
         )}
 
@@ -133,3 +132,66 @@ const TaskBoard = () => {
     </div>
   );
 };
+
+const TaskCard = ({ task }) => {
+  const diffColor = {
+    beginner:     'badge-green',
+    intermediate: 'badge-amber',
+    advanced:     'badge-red',
+  };
+  const compColor = {
+    paid:        'badge-green',
+    unpaid:      'badge-gray',
+    certificate: 'badge-purple',
+  };
+
+  const daysLeft = Math.ceil(
+    (new Date(task.deadline) - new Date()) / (1000 * 60 * 60 * 24)
+  );
+
+  return (
+    <Link to={`/skillbridge/tasks/${task._id}`} className="task-card">
+      <div className="task-card-header">
+        <div className="task-card-badges">
+          <span className={`badge ${diffColor[task.difficulty] || 'badge-gray'}`}>
+            {task.difficulty}
+          </span>
+          <span className={`badge ${compColor[task.compensation] || 'badge-gray'}`}>
+            {task.compensation}
+          </span>
+          {task.leadsToOpportunity && (
+            <span className="badge badge-purple">🚀 Opportunity</span>
+          )}
+        </div>
+        <span className={`deadline-chip ${daysLeft <= 3 ? 'urgent' : ''}`}>
+          {daysLeft > 0 ? `${daysLeft}d left` : 'Expired'}
+        </span>
+      </div>
+
+      <h3 className="task-card-title">{task.title}</h3>
+
+      <p className="task-card-desc">
+        {task.description?.length > 100
+          ? task.description.slice(0, 100) + '...'
+          : task.description}
+      </p>
+
+      <div className="task-card-skills">
+        {task.requiredSkills?.slice(0, 4).map(s => (
+          <span key={s} className="skill-tag">{s}</span>
+        ))}
+      </div>
+
+      <div className="task-card-footer">
+        <span className="task-poster">
+          🏢 {task.postedBy?.organization || task.postedBy?.name || 'Unknown'}
+        </span>
+        <span className="task-slots">
+          👥 {task.applicants?.length || 0}/{task.maxApplicants}
+        </span>
+      </div>
+    </Link>
+  );
+};
+
+export default TaskBoard;
