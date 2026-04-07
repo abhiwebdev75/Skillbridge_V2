@@ -112,13 +112,19 @@ const Chatbot = () => {
       }
 
     } catch (err) {
-      setMessages(prev => [...prev, {
-        role:    'assistant',
-        content: "I'm having trouble right now. Please try again in a moment! 🔄",
-        action:  null,
-        tasks:   null,
-        stats:   null,
-      }]);
+  console.error('CHATBOT ERROR:', err);
+  console.error('Response:', err?.response?.data);
+  console.error('Status:', err?.response?.status);
+  console.error('URL called:', err?.config?.url);
+
+  setMessages(prev => [...prev, {
+    role:    'assistant',
+    content: `Debug: ${err?.response?.status || 'No response'} — ${err?.response?.data?.message || err.message} — URL: ${err?.config?.url || 'unknown'}`,
+    action:  null,
+    tasks:   null,
+    stats:   null,
+  }]);
+
     } finally {
       setLoading(false);
     }
