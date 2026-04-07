@@ -43,7 +43,17 @@ const Chatbot = () => {
     tasks:   null,
     stats:   null,
   }]);
-
+useEffect(() => {
+  if (messages.length === 0) {
+    setMessages([{
+      role: 'assistant',
+      content: `Hi ${firstName}! 👋 I'm SkillBot powered by Gemini AI. How can I help you?`,
+      action: null,
+      tasks: null,
+      stats: null,
+    }]);
+  }
+}, []);
   const messagesEndRef = useRef(null);
   const inputRef       = useRef(null);
 
@@ -76,8 +86,9 @@ const Chatbot = () => {
 
     try {
       const contextMessages = [...messages, { role: 'user', content: msgText }]
-        .slice(-10)
-        .map(m => ({ role: m.role, content: m.content }));
+  .filter((m, index) => !(index === 0 && m.role === 'assistant')) // ❌ remove first assistant
+  .slice(-10)
+  .map(m => ({ role: m.role, content: m.content }));
 
       const res = await api.post('/chat', {
         messages:    contextMessages,
