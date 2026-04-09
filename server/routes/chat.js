@@ -3,6 +3,7 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const verifyToken = require('../middleware/verifyToken');
 const Task        = require('../models/Task');
 const User        = require('../models/User');
+const Job         = require('../models/Job');
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -193,7 +194,7 @@ router.post('/', verifyToken, async (req, res) => {
     }
 
     const model = genAI.getGenerativeModel({
-      model: 'gemini-1.5-flash',
+      model: 'gemini-1.5-flash-latest',
       tools,
       systemInstruction: `You are SkillBot, an intelligent AI career assistant built into SkillBridge.
 
