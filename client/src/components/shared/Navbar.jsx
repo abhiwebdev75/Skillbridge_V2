@@ -39,7 +39,7 @@ const Navbar = () => {
         <Link to="/dashboard" className="navbar-logo">
           <div className="logo-icon-wrap">
             <span>
-              <img src="\client\src\assets\skillbridge_logo.png" alt="SkillBridge logo" className="logo-img" />
+              <img src="\client\src\assets\skillbridge_logo.png" alt="SkillBridge logo" className="logo-img" height="30px" width="30px" />
             </span>
           </div>
           <span className="logo-text">SkillBridge</span>
