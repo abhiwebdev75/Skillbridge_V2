@@ -38,7 +38,9 @@ const Navbar = () => {
         {/* Logo */}
         <Link to="/dashboard" className="navbar-logo">
           <div className="logo-icon-wrap">
-            <span>SB</span>
+            <span>
+              <img src="/client/src/assets/skillbridge_logo.png" alt="SkillBridge logo" className="logo-img" />
+            </span>
           </div>
           <span className="logo-text">SkillBridge</span>
         </Link>
@@ -49,7 +51,7 @@ const Navbar = () => {
             className={`portal-btn ${activePortal === 'skillbridge' ? 'active' : ''}`}
             onClick={() => handleSwitch('skillbridge')}
           >
-            <span>🎓</span> Skill Bridge
+            <span>🎓</span> Dev Portal
           </button>
           <button
             className={`portal-btn ${activePortal === 'jobs' ? 'active' : ''}`}
@@ -188,7 +190,7 @@ const Navbar = () => {
               className={`portal-btn ${activePortal === 'skillbridge' ? 'active' : ''}`}
               onClick={() => handleSwitch('skillbridge')}
             >
-              🎓 Skill Bridge
+              🎓 Dev Portal
             </button>
             <button
               className={`portal-btn ${activePortal === 'jobs' ? 'active' : ''}`}
