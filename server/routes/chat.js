@@ -195,7 +195,7 @@ router.post('/', verifyToken, async (req, res) => {
     }
 
     const model = genAI.getGenerativeModel({
-      model: 'gemini-1.5-flash-001', // Use the standard production-ready string
+      model: 'gemini-3-flash', // Use the standard production-ready string
       tools,
       systemInstruction: `You are SkillBot, an intelligent AI career assistant built into SkillBridge.
 
