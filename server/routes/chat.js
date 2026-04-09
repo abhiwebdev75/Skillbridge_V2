@@ -1,12 +1,11 @@
 const router      = require('express').Router();
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-const { GoogleGenAI } = require('@google/genai');
-const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 const verifyToken = require('../middleware/verifyToken');
 const Task        = require('../models/Task');
 const User        = require('../models/User');
 const Job         = require('../models/Job');
 
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // ── Tool definitions — what Gemini can DO ──────────────────
 const tools = [{
@@ -195,7 +194,7 @@ router.post('/', verifyToken, async (req, res) => {
     }
 
     const model = genAI.getGenerativeModel({
-      model: 'gemini-3-flash', // Use the standard production-ready string
+      model: 'gemini-1.5-flash-001', // Use the standard production-ready string
       tools,
       systemInstruction: `You are SkillBot, an intelligent AI career assistant built into SkillBridge.
 
