@@ -1,11 +1,12 @@
 const router      = require('express').Router();
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { GoogleGenAI } = require('@google/genai');
+const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 const verifyToken = require('../middleware/verifyToken');
 const Task        = require('../models/Task');
 const User        = require('../models/User');
 const Job         = require('../models/Job');
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // ── Tool definitions — what Gemini can DO ──────────────────
 const tools = [{
