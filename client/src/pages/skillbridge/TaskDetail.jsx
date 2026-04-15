@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
+import ReactGA from "react-ga4"; // ✅ GA4
 import './Skill.css';
 
 const TaskDetail = () => {
@@ -18,6 +19,16 @@ const TaskDetail = () => {
     queryKey: ['task', id],
     queryFn:  () => api.get(`/tasks/${id}`).then(r => r.data),
   });
+
+  // ✅ EVENT: task_viewed
+  useEffect(() => {
+    if (task) {
+      ReactGA.event("task_viewed", {
+        category: "task",
+        label: task.title,
+      });
+    }
+  }, [task]);
 
   const applyMutation = useMutation({
     mutationFn: () => api.post(`/tasks/${id}/apply`, { coverNote }),
@@ -126,13 +137,22 @@ const TaskDetail = () => {
                       onChange={e => setCoverNote(e.target.value)}
                       rows={5}
                     />
+
+                    {/* ✅ EVENT: task_applied */}
                     <button
                       className="btn-primary"
-                      onClick={() => applyMutation.mutate()}
+                      onClick={() => {
+                        ReactGA.event("task_applied", {
+                          category: "engagement",
+                          label: task.title,
+                        });
+                        applyMutation.mutate();
+                      }}
                       disabled={applyMutation.isLoading}
                     >
                       {applyMutation.isLoading ? 'Submitting...' : 'Submit Application'}
                     </button>
+
                     <button className="btn-ghost" onClick={() => setApplying(false)}>
                       Cancel
                     </button>

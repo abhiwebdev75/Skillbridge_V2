@@ -1,10 +1,11 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { PortalProvider } from './context/PortalContext';
 import { ThemeProvider } from './context/ThemeContext';
+import ReactGA from "react-ga4";
 
 // 🔥 Lazy Loading
 const Login      = lazy(() => import('./pages/auth/Login'));
@@ -50,7 +51,6 @@ const RegisteredRoute = ({ children }) => {
   const { isLoggedIn, isRegistered, loading } = useAuth();
   if (loading) return <PageLoader />;
   if (!isLoggedIn)   return <Navigate to="/login" replace />;
-  // If logged in but no role selected, force role selection
   if (!isRegistered) return <Navigate to="/role-select" replace />;
   return children;
 };
@@ -61,11 +61,24 @@ const RecruiterRoute = ({ children }) => {
   return allowedRoles.includes(role) ? children : <Navigate to="/dashboard" replace />;
 };
 
-// 🚀 Routes Logic
+// 🚀 Routes Logic + GA4
 const AppRoutes = () => {
   const { isLoggedIn, isRegistered, loading } = useAuth();
+  const location = useLocation();
 
-  // Prevent flickering while checking auth state
+  // ✅ Initialize GA4 once
+  useEffect(() => {
+    ReactGA.initialize("G-RGY0CBH44N");
+  }, []);
+
+  // ✅ Track page views on route change
+  useEffect(() => {
+    ReactGA.send({
+      hitType: "pageview",
+      page: location.pathname,
+    });
+  }, [location]);
+
   if (loading) return <PageLoader />;
 
   const showLayout = isLoggedIn && isRegistered;
@@ -79,7 +92,6 @@ const AppRoutes = () => {
         <Suspense fallback={<PageLoader />}>
           <Routes>
 
-            {/* 🔥 ROOT REDIRECT */}
             <Route
               path="/"
               element={
@@ -91,7 +103,6 @@ const AppRoutes = () => {
               }
             />
 
-            {/* 🔥 AUTH ROUTES (Redirect if already registered) */}
             <Route
               path="/login"
               element={isLoggedIn && isRegistered ? <Navigate to="/dashboard" replace /> : <Login />}
@@ -102,7 +113,6 @@ const AppRoutes = () => {
               element={isLoggedIn && isRegistered ? <Navigate to="/dashboard" replace /> : <Register />}
             />
 
-            {/* Role Select - Only accessible if logged in BUT NOT yet registered */}
             <Route
               path="/role-select"
               element={
@@ -112,7 +122,6 @@ const AppRoutes = () => {
               }
             />
 
-            {/* Protected Dashboard */}
             <Route
               path="/dashboard"
               element={
@@ -122,7 +131,6 @@ const AppRoutes = () => {
               }
             />
 
-            {/* Profile */}
             <Route
               path="/profile"
               element={
@@ -132,7 +140,7 @@ const AppRoutes = () => {
               }
             />
 
-            {/* SkillBridge Sub-routes */}
+            {/* SkillBridge */}
             <Route path="/skillbridge">
               <Route index element={<RegisteredRoute><TaskBoard /></RegisteredRoute>} />
               <Route path="tasks" element={<RegisteredRoute><TaskBoard /></RegisteredRoute>} />
@@ -154,7 +162,7 @@ const AppRoutes = () => {
               <Route path="my-applications" element={<RegisteredRoute><MyApplications /></RegisteredRoute>} />
             </Route>
 
-            {/* Job Portal Sub-routes */}
+            {/* Job Portal */}
             <Route path="/jobs">
               <Route index element={<RegisteredRoute><JobListings /></RegisteredRoute>} />
               <Route path="internships" element={<RegisteredRoute><InternshipList /></RegisteredRoute>} />
@@ -169,7 +177,6 @@ const AppRoutes = () => {
               <Route path="my-applications" element={<RegisteredRoute><MyJobApplications /></RegisteredRoute>} />
             </Route>
 
-            {/* 404 */}
             <Route
               path="*"
               element={isLoggedIn ? <NotFound /> : <Navigate to="/login" replace />}
@@ -185,7 +192,7 @@ const AppRoutes = () => {
   );
 };
 
-// 🌐 Main App Component
+// 🌐 Main App
 const App = () => (
   <BrowserRouter>
     <ThemeProvider>
