@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
+import ReactGA from "react-ga4"; // ✅ GA4
 import './JobPortal.css';
 
 const JobDetail = () => {
@@ -18,6 +19,16 @@ const JobDetail = () => {
     queryKey: ['job', id],
     queryFn:  () => api.get(`/jobs/${id}`).then(r => r.data),
   });
+
+  // ✅ EVENT: job_viewed
+  useEffect(() => {
+    if (job) {
+      ReactGA.event("job_viewed", {
+        category: "job",
+        label: job.title,
+      });
+    }
+  }, [job]);
 
   const applyMutation = useMutation({
     mutationFn: () => api.post(`/jobs/${id}/apply`, { coverNote }),
@@ -129,25 +140,11 @@ const JobDetail = () => {
           {/* Sidebar */}
           <div className="job-detail-sidebar">
 
-            {/* Apply box */}
             {!isRecruiter && !isOwner && job.status === 'active' && (
               <div className="card">
                 {alreadyApplied ? (
                   <div>
                     <p style={{fontWeight:600}}>Application submitted</p>
-                    <div style={{
-                      marginTop:12, padding:'8px 14px',
-                      background: alreadyApplied.status === 'shortlisted'
-                        ? '#DCFCE7' : alreadyApplied.status === 'rejected'
-                        ? '#FEE2E2' : '#FEF3C7',
-                      borderRadius:'var(--radius-md)',
-                      fontSize:14, fontWeight:600,
-                      color: alreadyApplied.status === 'shortlisted'
-                        ? '#166534' : alreadyApplied.status === 'rejected'
-                        ? '#991B1B' : '#92400E'
-                    }}>
-                      Status: {alreadyApplied.status}
-                    </div>
                   </div>
                 ) : applying ? (
                   <div className="apply-form-jp">
@@ -158,13 +155,22 @@ const JobDetail = () => {
                       value={coverNote}
                       onChange={e => setCoverNote(e.target.value)}
                     />
+
+                    {/* ✅ EVENT: job_applied */}
                     <button
                       className="btn-primary w-full"
-                      onClick={() => applyMutation.mutate()}
+                      onClick={() => {
+                        ReactGA.event("job_applied", {
+                          category: "engagement",
+                          label: job.title,
+                        });
+                        applyMutation.mutate();
+                      }}
                       disabled={applyMutation.isLoading}
                     >
                       {applyMutation.isLoading ? 'Submitting...' : 'Submit application'}
                     </button>
+
                     <button className="btn-ghost w-full"
                       onClick={() => setApplying(false)}>
                       Cancel
@@ -172,60 +178,21 @@ const JobDetail = () => {
                   </div>
                 ) : (
                   <div>
-                    <p style={{fontSize:13, color:'var(--gray-500)', marginBottom:16}}>
-                      {job.applicants?.length || 0} people have applied
-                    </p>
                     <button className="btn-primary w-full"
-                      onClick={() => setApplying(true)}>
+                      onClick={() => {
+                        // ✅ EVENT: apply_clicked
+                        ReactGA.event("apply_clicked", {
+                          category: "interaction",
+                          label: job.title,
+                        });
+                        setApplying(true);
+                      }}>
                       Apply now
                     </button>
                   </div>
                 )}
               </div>
             )}
-
-            {/* Owner actions */}
-            {isOwner && (
-              <div className="card">
-                <p style={{fontWeight:600, marginBottom:12}}>Your listing</p>
-                <p style={{fontSize:13, color:'var(--gray-500)', marginBottom:16}}>
-                  {job.applicants?.length || 0} applicant(s)
-                </p>
-                <button className="btn-primary w-full"
-                  onClick={() => navigate('/jobs/recruiter-dashboard')}>
-                  Manage applicants
-                </button>
-              </div>
-            )}
-
-            {/* Job summary */}
-            <div className="card">
-              <h3 style={{marginBottom:14}}>Job summary</h3>
-              <div className="info-rows-jp">
-                <div className="info-row-jp">
-                  <span>Posted by</span>
-                  <span>{job.postedBy?.name}</span>
-                </div>
-                <div className="info-row-jp">
-                  <span>Company</span>
-                  <span>{job.company || job.postedBy?.organization || '—'}</span>
-                </div>
-                <div className="info-row-jp">
-                  <span>Job type</span>
-                  <span style={{textTransform:'capitalize'}}>{job.type}</span>
-                </div>
-                {job.openings && (
-                  <div className="info-row-jp">
-                    <span>Openings</span>
-                    <span>{job.openings}</span>
-                  </div>
-                )}
-                <div className="info-row-jp">
-                  <span>Posted on</span>
-                  <span>{new Date(job.createdAt).toLocaleDateString('en-IN')}</span>
-                </div>
-              </div>
-            </div>
 
           </div>
         </div>
