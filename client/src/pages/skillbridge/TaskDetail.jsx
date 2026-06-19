@@ -4,7 +4,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
-import ReactGA from "react-ga4"; // ✅ GA4
 import './Skill.css';
 
 const TaskDetail = () => {
@@ -20,15 +19,7 @@ const TaskDetail = () => {
     queryFn:  () => api.get(`/tasks/${id}`).then(r => r.data),
   });
 
-  // ✅ EVENT: task_viewed
-  useEffect(() => {
-    if (task) {
-      ReactGA.event("task_viewed", {
-        category: "task",
-        label: task.title,
-      });
-    }
-  }, [task]);
+  
 
   const applyMutation = useMutation({
     mutationFn: () => api.post(`/tasks/${id}/apply`, { coverNote }),
@@ -141,13 +132,6 @@ const TaskDetail = () => {
                     {/* ✅ EVENT: task_applied */}
                     <button
                       className="btn-primary"
-                      onClick={() => {
-                        ReactGA.event("task_applied", {
-                          category: "engagement",
-                          label: task.title,
-                        });
-                        applyMutation.mutate();
-                      }}
                       disabled={applyMutation.isLoading}
                     >
                       {applyMutation.isLoading ? 'Submitting...' : 'Submit Application'}
