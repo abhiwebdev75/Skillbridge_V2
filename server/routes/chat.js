@@ -338,10 +338,16 @@ RESPONSE STYLE:
 
     // ── Convert message history to Gemini format ───────────
     // Gemini uses 'model' instead of 'assistant' for role names
-    const history = messages.slice(0, -1).map(m => ({
-      role:  m.role === 'assistant' ? 'model' : 'user',
-      parts: [{ text: m.content }],
-    }));
+    const history = messages
+  .slice(0, -1)
+  .filter((m, index, arr) => {
+    if (index === 0 && m.role === 'assistant') return false;
+    return true;
+  })
+  .map(m => ({
+    role: m.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: m.content }],
+  }));
 
     const lastMessage = messages[messages.length - 1];
 
