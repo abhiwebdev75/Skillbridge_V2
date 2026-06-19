@@ -331,7 +331,7 @@ RESPONSE STYLE:
 
     // ── Initialise Gemini model with tools ─────────────────
     const model = genAI.getGenerativeModel({
-      model: 'gemini-3.5-flash',   // Fast, free, capable model
+      model: 'gemini-3-flash',   // Fast, free, capable model
       tools,
       systemInstruction,
     });
