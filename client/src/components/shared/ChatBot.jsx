@@ -122,8 +122,6 @@ const Chatbot = () => {
       });
 
       const { text: replyText, action, toolResults } = res.data;
-const models = await genAI.listModels();
-console.log(models);
       // Extract structured data from tool results
       const taskResult  = toolResults?.find(t => t.name === 'search_tasks')?.result;
       const statsResult = toolResults?.find(t => t.name === 'get_platform_stats')?.result;
