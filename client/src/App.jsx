@@ -5,7 +5,6 @@ import { lazy, Suspense, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { PortalProvider } from './context/PortalContext';
 import { ThemeProvider } from './context/ThemeContext';
-import ReactGA from "react-ga4";
 
 // 🔥 Lazy Loading
 const Login      = lazy(() => import('./pages/auth/Login'));
@@ -61,23 +60,11 @@ const RecruiterRoute = ({ children }) => {
   return allowedRoles.includes(role) ? children : <Navigate to="/dashboard" replace />;
 };
 
-// 🚀 Routes Logic + GA4
 const AppRoutes = () => {
   const { isLoggedIn, isRegistered, loading } = useAuth();
   const location = useLocation();
 
-  // ✅ Initialize GA4 once
-  useEffect(() => {
-    ReactGA.initialize("G-RGY0CBH44N");
-  }, []);
 
-  // ✅ Track page views on route change
-  useEffect(() => {
-    ReactGA.send({
-      hitType: "pageview",
-      page: location.pathname,
-    });
-  }, [location]);
 
   if (loading) return <PageLoader />;
 
